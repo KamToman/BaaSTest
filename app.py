@@ -6,7 +6,7 @@ import os
 app = Flask(__name__)
 
 # Retrieve and quote the connection string to avoid issues with special characters
-connection_string = os.getenv("DB_CONNECTION_STRING")
+connection_string = "Server=tcp:mydbserver-baas.database.windows.net,1433;Initial Catalog=MyBaaSDb;Persist Security Info=False;User ID=baas;Password=!Haslo123123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
 if connection_string:
     connection_string = url_quote(connection_string)
 else:
