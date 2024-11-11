@@ -1,67 +1,81 @@
-from flask import Flask, request, jsonify
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 import pyodbc
-import os
+from typing import List
 
+# Initialize FastAPI app
+app = FastAPI()
 
-app = Flask(__name__)
+# Connection string to Azure SQL Database
+connection_string = (
+    "Driver={ODBC Driver 17 for SQL Server};"
+    "Server=tcp:mydbserver-baas.database.windows.net,1433;"
+    "Database=MyBaaSDb;"
+    "Uid=baas;"
+    "Pwd=!Haslo123123;"
+)
 
-# Connection string do bazy danych Azure SQL
-connection_string = "Server=tcp:mydbserver-baas.database.windows.net,1433;Initial Catalog=MyBaaSDb;Persist Security Info=False;User ID=baas;Password=!Haslo123123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+# Pydantic model for the user
+class User(BaseModel):
+    Name: str
+    Email: str
+    Age: int
 
-# Funkcja do uzyskania połączenia z bazą danych
+class UserInDB(User):
+    UserID: int
+
+# Utility function to get database connection
 def get_db_connection():
     return pyodbc.connect(connection_string)
 
-# Endpoint do pobierania listy użytkowników (GET)
-@app.route('/api/users', methods=['GET'])
-def get_users():
+# Endpoint to get all users (GET)
+@app.get("/api/users", response_model=List[UserInDB])
+async def get_users():
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT UserID, Name, Email, Age FROM Users")
-    users = cursor.fetchall()
+    rows = cursor.fetchall()
     conn.close()
-    users_list = [{"UserID": row[0], "Name": row[1], "Email": row[2], "Age": row[3]} for row in users]
-    return jsonify(users_list)
+    users = [{"UserID": row[0], "Name": row[1], "Email": row[2], "Age": row[3]} for row in rows]
+    return users
 
-# Endpoint do dodawania użytkownika (POST)
-@app.route('/api/users', methods=['POST'])
-def add_user():
-    data = request.get_json()
-    name = data.get("Name")
-    email = data.get("Email")
-    age = data.get("Age")
-
+# Endpoint to add a new user (POST)
+@app.post("/api/users", response_model=UserInDB)
+async def add_user(user: User):
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO Users (Name, Email, Age) VALUES (?, ?, ?)", (name, email, age))
+    cursor.execute("INSERT INTO Users (Name, Email, Age) OUTPUT INSERTED.UserID VALUES (?, ?, ?)", 
+                   (user.Name, user.Email, user.Age))
+    user_id = cursor.fetchone()[0]
     conn.commit()
     conn.close()
-    return jsonify({"message": "User added successfully"}), 201
+    return {**user.dict(), "UserID": user_id}
 
-# Endpoint do aktualizacji użytkownika (PUT)
-@app.route('/api/users/<int:user_id>', methods=['PUT'])
-def update_user(user_id):
-    data = request.get_json()
-    name = data.get("Name")
-    email = data.get("Email")
-    age = data.get("Age")
-
+# Endpoint to update a user (PUT)
+@app.put("/api/users/{user_id}", response_model=UserInDB)
+async def update_user(user_id: int, user: User):
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("UPDATE Users SET Name = ?, Email = ?, Age = ? WHERE UserID = ?", (name, email, age, user_id))
+    cursor.execute(
+        "UPDATE Users SET Name = ?, Email = ?, Age = ? WHERE UserID = ?", 
+        (user.Name, user.Email, user.Age, user_id)
+    )
+    if cursor.rowcount == 0:
+        conn.close()
+        raise HTTPException(status_code=404, detail="User not found")
     conn.commit()
     conn.close()
-    return jsonify({"message": "User updated successfully"}), 200
+    return {**user.dict(), "UserID": user_id}
 
-# Endpoint do usuwania użytkownika (DELETE)
-@app.route('/api/users/<int:user_id>', methods=['DELETE'])
-def delete_user(user_id):
+# Endpoint to delete a user (DELETE)
+@app.delete("/api/users/{user_id}")
+async def delete_user(user_id: int):
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("DELETE FROM Users WHERE UserID = ?", (user_id,))
+    if cursor.rowcount == 0:
+        conn.close()
+        raise HTTPException(status_code=404, detail="User not found")
     conn.commit()
     conn.close()
-    return jsonify({"message": "User deleted successfully"}), 200
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000)
+    return {"message": "User deleted successfully"}
