@@ -63,3 +63,6 @@ def delete_user(user_id):
     conn.close()
     return jsonify({"message": "User deleted successfully"}), 200
 
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8000)
+
