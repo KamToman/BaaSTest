@@ -2,4 +2,4 @@ fastapi
 uvicorn
 pyodbc
 flask
-werkzeug
+Werkzeug==2.2.2
