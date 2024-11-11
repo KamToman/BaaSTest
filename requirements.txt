@@ -1,4 +1,3 @@
-Flask==2.3.0
-Werkzeug==2.3.0
-pyodbc==4.0.34
-gunicorn==20.1.0
+pip install fastapi
+pip install uvicorn
+pip install pyodbc
