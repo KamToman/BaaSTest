@@ -5,7 +5,7 @@ import os
 app = Flask(__name__)
 
 # Connection string do bazy danych Azure SQL
-connection_string = "Server=tcp:mydbserver-baas.database.windows.net,1433;Initial Catalog=MyBaaSDb;Persist Security Info=False;User ID=baas;Password=!Haslo123123;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+connection_string = os.getenv("DB_CONNECTION_STRING")
 
 # Funkcja do uzyskania połączenia z bazą danych
 def get_db_connection():
