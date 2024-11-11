@@ -5,8 +5,12 @@ import os
 
 app = Flask(__name__)
 
-# Connection string to the Azure SQL Database
+# Retrieve and quote the connection string to avoid issues with special characters
 connection_string = os.getenv("DB_CONNECTION_STRING")
+if connection_string:
+    connection_string = url_quote(connection_string)
+else:
+    raise ValueError("DB_CONNECTION_STRING environment variable is not set.")
 
 # Function to establish a connection with the database
 def get_db_connection():
@@ -41,6 +45,10 @@ def add_user():
     email = data.get("Email")
     age = data.get("Age")
 
+    # Check for required fields
+    if not all([name, email, age]):
+        return jsonify({"error": "Missing required fields: Name, Email, or Age"}), 400
+
     conn = get_db_connection()
     if not conn:
         return jsonify({"error": "Database connection error"}), 500
@@ -60,6 +68,10 @@ def update_user(user_id):
     name = data.get("Name")
     email = data.get("Email")
     age = data.get("Age")
+
+    # Check for required fields
+    if not all([name, email, age]):
+        return jsonify({"error": "Missing required fields: Name, Email, or Age"}), 400
 
     conn = get_db_connection()
     if not conn:
@@ -90,5 +102,3 @@ def delete_user(user_id):
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000)
-
-
