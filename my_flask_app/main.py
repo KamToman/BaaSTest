@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 import pyodbc
 import os
 
+
 app = Flask(__name__)
 
 # Connection string do bazy danych Azure SQL
