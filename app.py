@@ -1,5 +1,4 @@
 from flask import Flask, request, jsonify
-from urllib.parse import quote as url_quote
 import pyodbc
 import os
 
