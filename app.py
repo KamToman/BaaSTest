@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import pyodbc
 from typing import List
+import os
 
 # Initialize FastAPI app
 app = FastAPI()
