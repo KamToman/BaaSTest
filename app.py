@@ -7,13 +7,7 @@ from typing import List
 app = FastAPI()
 
 # Connection string to Azure SQL Database
-connection_string = (
-    "Driver={ODBC Driver 17 for SQL Server};"
-    "Server=tcp:mydbserver-baas.database.windows.net,1433;"
-    "Database=MyBaaSDb;"
-    "Uid=baas;"
-    "Pwd=!Haslo123123;"
-)
+connection_string = os.getenv("DbConnectionString")
 
 # Pydantic model for the user
 class User(BaseModel):
