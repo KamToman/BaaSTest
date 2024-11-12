@@ -7,7 +7,8 @@ from typing import List
 app = FastAPI()
 
 # Connection string to Azure SQL Database
-connection_string = (Server=tcp:mybassserver.database.windows.net,1433;Initial Catalog=MyBaaSDb;Persist Security Info=False;User ID={your_username};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Authentication="Active Directory Integrated";)
+connection_string = (Server=tcp:mybassserver.database.windows.net,1433;Initial Catalog=MyBaaSDb;Persist Security Info=False;User ID=
+wrx81713@student.wroclaw.merito.pl;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Authentication="Active Directory Integrated";)
 
 # Pydantic model for the user
 class User(BaseModel):
