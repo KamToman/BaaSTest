@@ -23,6 +23,11 @@ class UserInDB(User):
 def get_db_connection():
     return pyodbc.connect(connection_string)
 
+# Home endpoint
+@app.get("/")
+async def home():
+    return {"message": "Hello"}
+
 # Endpoint to get all users (GET)
 @app.get("/api/users", response_model=List[UserInDB])
 async def get_users():
