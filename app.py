@@ -7,18 +7,7 @@ from typing import List
 app = FastAPI()
 
 # Connection string to Azure SQL Database
-connection_string = (
-    "Driver={ODBC Driver 18 for SQL Server};"
-    "Server=tcp:mybassserver.database.windows.net,1433;"
-    "Initial Catalog=MyBaaSDb;"
-    "Persist Security Info=False;"
-    "User ID=BaaS;"
-    "Password=!Haslo123123;"
-    "MultipleActiveResultSets=False;"
-    "Encrypt=True;"
-    "TrustServerCertificate=False;"
-    "Connection Timeout=30;"
-)
+connection_string = (Server=tcp:mybassserver.database.windows.net,1433;Initial Catalog=MyBaaSDb;Persist Security Info=False;User ID={your_username};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Authentication="Active Directory Integrated";)
 
 # Pydantic model for the user
 class User(BaseModel):
