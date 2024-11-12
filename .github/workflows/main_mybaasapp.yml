@@ -50,17 +50,17 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     
     steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
+      - name: Log in to Azure
+        uses: azure/login@v2
         with:
-          name: python-app
-      - name: Unzip artifact for deployment
-        run: unzip release.zip
-      
-      - name: 'Deploy to Azure Web App'
-        uses: azure/webapps-deploy@v3
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+
+      - name: 'Deploy Docker image to Azure Web App'
+        uses: azure/webapps-deploy@v2
         id: deploy-to-webapp
         with:
-          app-name: 'MyBaaSApp'
-          slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3643C36576C94933B74DC26D1125497B }}
+          app-name: 'MyBaaSApp'  # Replace with your Azure Web App name
+          slot-name: 'Production'  # Optionally use a slot name like 'Staging'
+          images: 'kampac/myapp:${{ github.sha }}'  # Docker image name to deploy
