@@ -56,5 +56,5 @@ jobs:
         with:
           app-name: 'MyBaaSApp'  # Replace with your Azure Web App name
           slot-name: 'Production'  # Optionally use a slot name like 'Staging'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}  # Ensure the correct publish profile secret is set
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3643C36576C94933B74DC26D1125497B }}  # Ensure the correct publish profile secret is set
           images: 'kampac/myapp:${{ github.sha }}'  # Docker image name to deploy
