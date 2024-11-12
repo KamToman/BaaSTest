@@ -12,11 +12,12 @@ connection_string = (
     "Server=tcp:mybassserver.database.windows.net,1433;"
     "Initial Catalog=MyBaaSDb;"
     "Persist Security Info=False;"
-    "User ID=wrx81713@student.wroclaw.merito.pl;"
+    "User ID=BaaS;"
+    "Password=!Haslo123123;"
     "MultipleActiveResultSets=False;"
     "Encrypt=True;"
     "TrustServerCertificate=False;"
-    "Authentication=ActiveDirectoryIntegrated;"
+    "Connection Timeout=30;"
 )
 
 # Pydantic model for the user
