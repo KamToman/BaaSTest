@@ -34,10 +34,10 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t yourdockerusername/yourimage:${{ github.sha }} .
-          docker tag yourdockerusername/yourimage:${{ github.sha }} yourdockerusername/yourimage:latest
+          docker build -t kampac/yourimage:${{ github.sha }} .  # Replace 'yourimage' with your actual image name
+          docker tag kampac/yourimage:${{ github.sha }} kampac/yourimage:latest  # Replace 'yourimage' with your actual image name
 
       - name: Push Docker image to Docker Hub
         run: |
-          docker push yourdockerusername/yourimage:${{ github.sha }}
-          docker push yourdockerusername/yourimage:latest
+          docker push kampac/yourimage:${{ github.sha }}  # Replace 'yourimage' with your actual image name
+          docker push kampac/yourimage:latest  # Replace 'yourimage' with your actual image name
