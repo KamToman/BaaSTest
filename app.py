@@ -8,7 +8,7 @@ app = FastAPI()
 
 # Connection string to Azure SQL Database
 connection_string = (
-    "Driver={ODBC Driver 18 for SQL Server};"
+    "Driver={ODBC Driver 17 for SQL Server};"
     "Server=tcp:mybassserver.database.windows.net,1433;"
     "Initial Catalog=MyBaaSDb;"
     "Persist Security Info=False;"
