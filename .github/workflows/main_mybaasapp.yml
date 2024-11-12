@@ -45,14 +45,22 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: build
-
+    environment:
+      name: 'Production'
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+    
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: 'Deploy to Azure Web App'
-        uses: azure/webapps-deploy@v2
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
         with:
-          app-name: 'MyBaaSApp'  # Replace with your Azure App Service name
-          slot-name: 'Production'  # Optionally use a slot name, like 'Staging'
-          images: 'kampac/myapp:${{ github.sha }}'  # Docker image name
+          name: python-app
+      - name: Unzip artifact for deployment
+        run: unzip release.zip
+      
+      - name: 'Deploy to Azure Web App'
+        uses: azure/webapps-deploy@v3
+        id: deploy-to-webapp
+        with:
+          app-name: 'MyBaaSApp'
+          slot-name: 'Production'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3643C36576C94933B74DC26D1125497B }}
