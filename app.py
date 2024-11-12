@@ -8,17 +8,16 @@ app = FastAPI()
 
 # Connection string to Azure SQL Database
 connection_string = (
-    "Driver={ODBC Driver 17 for SQL Server};"
+    "Driver={ODBC Driver 18 for SQL Server};"
     "Server=tcp:mybassserver.database.windows.net,1433;"
-    "Initial Catalog=MyBaaSDb;"
-    "Persist Security Info=False;"
-    "User ID=BaaS;"
-    "Password=!Haslo123123;"
-    "MultipleActiveResultSets=False;"
-    "Encrypt=True;"
-    "TrustServerCertificate=False;"
+    "Database=MyBaaSDb;"
+    "Uid=BaaS;"
+    "Pwd=!Haslo123123;"  # Replace with the actual password for the BaaS user
+    "Encrypt=yes;"
+    "TrustServerCertificate=no;"
     "Connection Timeout=30;"
 )
+
 
 # Pydantic model for the user
 class User(BaseModel):
