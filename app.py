@@ -8,7 +8,17 @@ import os
 app = FastAPI()
 
 # Connection string to Azure SQL Database
-connection_string = os.getenv("DbConnectionString")
+connection_string = (
+    "Server=tcp:mybassserver.database.windows.net,1433;"
+    "Initial Catalog=MyBaaSDb;"
+    "Persist Security Info=False;"
+    "User ID=BaaS;"
+    "Password=!Haslo123123;"  # Replace {your_password} with the actual password
+    "MultipleActiveResultSets=False;"
+    "Encrypt=True;"
+    "TrustServerCertificate=False;"
+    "Connection Timeout=30;"
+)
 
 # Pydantic model for the user
 class User(BaseModel):
