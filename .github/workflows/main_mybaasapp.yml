@@ -17,31 +17,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python version
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.8'
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-      - name: Create and start virtual environment
+      - name: Log in to DockerHub (if using DockerHub) or Azure Container Registry (ACR)
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.REGISTRY_URL }} # E.g., 'myregistry.azurecr.io'
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Build Docker image
         run: |
-          python -m venv venv
-          source venv/bin/activate
-      
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-        
-      # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
+          docker build -t ${{ secrets.REGISTRY_URL }}/mybaasapp:latest .
 
-      - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
-
-      - name: Upload artifact for deployment jobs
-        uses: actions/upload-artifact@v4
-        with:
-          name: python-app
-          path: |
-            release.zip
-            !venv/
+      - name: Push Docker image to registry
+        run: |
+          docker push ${{ secrets.REGISTRY_URL }}/mybaasapp:latest
 
   deploy:
     runs-on: ubuntu-latest
@@ -51,19 +43,15 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     
     steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
+      - name: Log in to Azure CLI
+        uses: azure/login@v1
         with:
-          name: python-app
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Unzip artifact for deployment
-        run: unzip release.zip
-
-      
-      - name: 'Deploy to Azure Web App'
-        uses: azure/webapps-deploy@v3
+      - name: Deploy to Azure Web App with Docker
+        uses: azure/webapps-container-action@v1
         id: deploy-to-webapp
         with:
           app-name: 'MyBaaSApp'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3643C36576C94933B74DC26D1125497B }}
+          images: ${{ secrets.REGISTRY_URL }}/mybaasapp:latest
