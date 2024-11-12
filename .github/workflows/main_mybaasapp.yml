@@ -50,17 +50,11 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     
     steps:
-      - name: Log in to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-
       - name: 'Deploy Docker image to Azure Web App'
         uses: azure/webapps-deploy@v2
         id: deploy-to-webapp
         with:
           app-name: 'MyBaaSApp'  # Replace with your Azure Web App name
           slot-name: 'Production'  # Optionally use a slot name like 'Staging'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}  # Ensure the correct publish profile secret is set
           images: 'kampac/myapp:${{ github.sha }}'  # Docker image name to deploy
