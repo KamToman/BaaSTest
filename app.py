@@ -49,18 +49,23 @@ async def get_users():
         users = [{"UserID": row[0], "Name": row[1], "Email": row[2], "Age": row[3]} for row in rows]
     return users
 
-# Endpoint to add a new user (POST)
+# POST Endpoint to add a new user
 @app.post("/api/users", response_model=UserInDB)
 async def add_user(user: User):
-    with get_db_connection() as conn:
-        cursor = conn.cursor()
-        cursor.execute(
-            "INSERT INTO Users (Name, Email, Age) OUTPUT INSERTED.UserID VALUES (?, ?, ?)", 
-            (user.Name, user.Email, user.Age)
-        )
-        user_id = cursor.fetchone()[0]
-        conn.commit()
-    return {**user.dict(), "UserID": user_id}
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "INSERT INTO Users (Name, Email, Age) OUTPUT INSERTED.UserID VALUES (?, ?, ?)", 
+                (user.Name, user.Email, user.Age)
+            )
+            user_id = cursor.fetchone()[0]
+            conn.commit()
+        return {**user.dict(), "UserID": user_id}
+    except Exception as e:
+        # Log or print the exception for debugging
+        print(f"Error: {e}")
+        raise HTTPException(status_code=500, detail="Failed to add use
 
 # Endpoint to update a user (PUT)
 @app.put("/api/users/{user_id}", response_model=UserInDB)
