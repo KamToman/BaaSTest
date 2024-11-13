@@ -50,11 +50,6 @@ async def get_users():
     return users
 
 
-
-Share
-
-
-You said:
 @app.post("/api/users", response_model=UserInDB)
 async def add_user(user: User):
     with get_db_connection() as conn:
