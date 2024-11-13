@@ -49,6 +49,53 @@ async def get_users():
         users = [{"UserID": row[0], "Name": row[1], "Email": row[2], "Age": row[3]} for row in rows]
     return users
 
+
+
+Share
+
+
+You said:
+@app.post("/api/users", response_model=UserInDB)
+async def add_user(user: User):
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO Users (Name, Email, Age) OUTPUT INSERTED.UserID VALUES (?, ?, ?)", 
+            (user.Name, user.Email, user.Age)
+        )
+        user_id = cursor.fetchone()[0]
+        conn.commit()
+    return {**user.dict(), "UserID": user_id}
+
+is this python api endpoint written correctly. its not working for me while get works fine. here is my get:
+
+# Endpoint to get all users (GET)
+@app.get("/api/users", response_model=List[UserInDB])
+async def get_users():
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT UserID, Name, Email, Age FROM Users")
+        rows = cursor.fetchall()
+        users = [{"UserID": row[0], "Name": row[1], "Email": row[2], "Age": row[3]} for row in rows]
+    return users
+ChatGPT said:
+ChatGPT
+Your POST endpoint looks almost correct, but there are a couple of potential issues that might cause it to fail:
+
+User Model and Validation: Ensure that the User model you are passing has the required fields (like Name, Email, Age) and that they align with the columns in your database.
+
+Connection Handling: The get_db_connection() function might need additional error handling to ensure the connection is properly established in asynchronous contexts, especially if your database operations aren’t fully async.
+
+Parameter Passing: Some databases expect parameterized queries to use ? (e.g., SQLite) or @param (e.g., SQL Server). Since you're using SQL Server (as per the connection string), the ? placeholder should work, but double-check to ensure it is configured to accept it.
+
+Debugging Steps: To identify the exact problem, wrap the insertion in a try-except block and log or print any errors to capture more detailed information about what's failing.
+
+Here’s a modified version of your code with a few added checks:
+
+python
+Copy code
+from fastapi import HTTPException
+
 # POST Endpoint to add a new user
 @app.post("/api/users", response_model=UserInDB)
 async def add_user(user: User):
@@ -65,7 +112,7 @@ async def add_user(user: User):
     except Exception as e:
         # Log or print the exception for debugging
         print(f"Error: {e}")
-        raise HTTPException(status_code=500, detail="Failed to add use
+        raise HTTPException(status_code=500, detail="Failed to add user")
 
 # Endpoint to update a user (PUT)
 @app.put("/api/users/{user_id}", response_model=UserInDB)
