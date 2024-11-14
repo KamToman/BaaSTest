@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 # Database connection setup
 def get_db_connection():
-    connection_string = "Driver={ODBC Driver 18 for SQL Server};Server=tcp:mybassserver.database.windows.net,1433;Database=MyBaaSDb;Uid=wrx81713@student.wroclaw.merito.pl;Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;Authentication=ActiveDirectoryIntegrated" 
+    connection_string = "Driver={ODBC Driver 18 for SQL Server};Server=tcp:mybassserver.database.windows.net,1433;Database=MyBaaSDb;Uid=BaaS;Pwd=!Haslo123123;Encrypt=yes;TrustServerCertificate=no;Connection Timeout=30;" 
     conn = pyodbc.connect(connection_string)
     return conn
 
